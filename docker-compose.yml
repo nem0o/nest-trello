@@ -1,0 +1,37 @@
+version: '3.6'
+
+volumes:
+  postgres_data:
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: yarn start:dev
+    volumes:
+      - .:/usr/app/
+      - /usr/app/node_modules
+    ports:
+      - "5400:5400"
+    depends_on:
+      - postgres
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5400
+      DB_NAME: nest-trello
+      DB_USERNAME: purrweb
+      DB_PASSWORD: secretpassword
+  postgres:
+    image: postgres:9.6.2-alpine
+    environment:
+      POSTGRES_USER: purrweb
+      POSTGRES_PASSWORD: secretpassword
+      POSTGRES_DB: n-t
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  adminer:
+      image: adminer
+      restart: always
+      ports:
+          - 8080:8080
